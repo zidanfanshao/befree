@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishTrimmed>true</PublishTrimmed> 
+    <TrimMode>copyused</TrimMode> <!-- 使用保守修剪模式 -->
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Figgle" Version="0.5.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="YamlDotNet" Version="16.2.0" Trimmable="false" />
+  </ItemGroup>
+
+  <!-- 嵌入资源 -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\clash-windows-amd64.exe" />
+  </ItemGroup>
+
+</Project>
