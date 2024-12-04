@@ -11,6 +11,10 @@
 release中的文件包含了一个clash，如果怕存在病毒，可以直接下载源码修改befree.csproj以及clashrunner.cs中的clash文件路径至自己的clash。
 
 
+## 更新记录
+```
+v0.2 针对轮询中可能会轮询到失效、不可用节点，添加了通过参数修改节点测速链接，再次请求时均使用有用的节点进行连接。
+```
 
 ## 编码环境
 
@@ -21,8 +25,9 @@ release中的文件包含了一个clash，如果怕存在病毒，可以直接�
 ## 利用方法
 
 ```
-  -f      Specify a file path						指定存在订阅的txt文件
+  -f      Specify a file path						        指定存在订阅的txt文件
   -p      Specify a port number(http&socks5) 		指定代理监听端口
+  -t      Specify a link for speed testing      指定一个用于测速的链接(默认https://www.google.com)
 ```
 
 

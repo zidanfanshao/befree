@@ -6,37 +6,21 @@ class Program
 
     static void Main(string[] args)
     {
-        string inputFile = "./input.txt";
+        string inputFile = "./aaa.txt";
         int listenPort = 1081;
+        string SpeedUrl = "https://www.google.com";
         var parsedArgs = ArgsParser.ParseArgs(args);
-        if (parsedArgs.Count == 0)
-        {
-            return;
-        }
-        if (parsedArgs.ContainsKey("-f"))
-        {
-            inputFile = parsedArgs["-f"];
-        }
+        if (parsedArgs.Count == 0){return;}
+        if (parsedArgs.ContainsKey("-f")){inputFile = parsedArgs["-f"];}
+        if (parsedArgs.ContainsKey("-p")){if (int.TryParse(parsedArgs["-p"], out int parsedPort)){listenPort = parsedPort;}else{Console.WriteLine("[-] 无效的端口号。使用默认端口 1081。");}}
+        if (parsedArgs.ContainsKey("-t")){SpeedUrl = parsedArgs["-t"];}
+        Console.WriteLine("我的天空！ Befree v0.2");
 
-        if (parsedArgs.ContainsKey("-p"))
-        {
-            if (int.TryParse(parsedArgs["-p"], out int parsedPort))
-            {
-                listenPort = parsedPort;
-            }
-            else
-            {
-                Console.WriteLine("[-] 无效的端口号。使用默认端口 1081。");
-            }
-        }
-
-        Console.WriteLine("我的天空！ Befree");
-        
-        RunMain(inputFile,listenPort);
+        RunMain(inputFile,listenPort,SpeedUrl);
         
     }
 
-    static void RunMain(string inputFile,int listenPort)
+    static void RunMain(string inputFile,int listenPort,string SpeedUrl)
     {
         string outputFile = "sectest.yaml";
 
@@ -66,11 +50,13 @@ class Program
         Console.WriteLine($" [+] 其中包含trojan节点数量为: {totalTrojanCount}");
 
         //3.生成clash配置文件
-        ClashConfigManager.GenerateConfig(allNodes,outputFile,listenPort);
-        //Console.WriteLine($" [+] Clash配置已生成: {outputFile}");
+        if (allNodes.Count > 0){
+            ClashConfigManager.GenerateConfig(allNodes,outputFile,listenPort,SpeedUrl);
+            //Console.WriteLine($" [+] Clash配置已生成: {outputFile}");    
+            //4.运行clash
+            ClashRunner.RunClash(outputFile);
+        }else{Console.WriteLine($" [-] 未获取到可用节点，无法启动befree");}
 
-        //4.运行clash
-        ClashRunner.RunClash(outputFile);
     }
 
 
@@ -91,13 +77,11 @@ class Program
             Node node = null;
             if (line.StartsWith("vmess://"))
             {
-                //Console.WriteLine($"vmess_line: {line}");
                 node = VmessNode.FromBase64(line.Substring(8));
                 totalVmessCount++;
             }
             else if(line.StartsWith("ss://"))
             {
-                //Console.WriteLine($"ss_line: {line}");
                 node = ShadowsocksNode.Parse(line.Substring(5));
                 totalSsCount++;
             }
@@ -110,10 +94,7 @@ class Program
                 node = TrojanNode.Parse(line.Substring(9));
                 totalTrojanCount++;
             }
-            if (node != null)
-            {
-                nodes.Add(node);
-            }
+            if (node != null){nodes.Add(node);}
         }
         return nodes;
     }
@@ -126,7 +107,7 @@ class Program
         {
             using var client = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(10)
+                Timeout = TimeSpan.FromSeconds(1000)
             };
             var response = client.GetStringAsync(url).Result;
             Console.WriteLine($" [+] 订阅获取成功： {url}");

@@ -25,8 +25,6 @@ namespace Befree
             var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
             try
             {
-                //Console.WriteLine($"Decoded JSON: {json}");
-                
                 // 使用 System.Text.Json 解析 JSON 字符串
                 using (JsonDocument doc = JsonDocument.Parse(json))
                 {

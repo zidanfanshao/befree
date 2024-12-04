@@ -31,7 +31,7 @@ namespace Befree
                     FileName = clashExecutablePath,      // 指定 Clash 可执行文件路径
                     Arguments = $"-f {configFilePath}",  // 指定配置文件
                     UseShellExecute = false,             // 不使用 shell 执行（直接启动进程）
-                    CreateNoWindow = true               // 不显示命令行窗口
+                    CreateNoWindow = false               // 不显示命令行窗口
                 };
 
                 // 启动进程

@@ -8,7 +8,7 @@ namespace Befree
 {
     public static class ClashConfigManager
     {
-        public static void GenerateConfig(List<Node> nodes, string outputFileName, int listenPort)
+        public static void GenerateConfig(List<Node> nodes, string outputFileName, int listenPort, string SpeedUrl)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace Befree
 
                 // 创建 Clash 配置的 YAML 字符串
                 var yaml = new StringBuilder();
-                yaml.AppendLine("allowLan: true");
+                yaml.AppendLine("allowLan: false");
                 yaml.AppendLine($"mixed-port: {listenPort}");
                 yaml.AppendLine("rules:");
                 yaml.AppendLine("  - MATCH, proxy_pool");
@@ -57,8 +57,8 @@ namespace Befree
                 {
                     yaml.AppendLine($"      - {name}");
                 }
-                yaml.AppendLine("    url: http://www.google.com");
-                yaml.AppendLine("    interval: 300");
+                yaml.AppendLine($"    url: {SpeedUrl}");
+                yaml.AppendLine("    interval: 5");
                 yaml.AppendLine("    strategy: round-robin");
                 yaml.AppendLine("proxies:");
                 foreach (var proxy in proxies)

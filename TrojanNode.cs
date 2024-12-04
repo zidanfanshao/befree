@@ -10,26 +10,23 @@ namespace Befree
         public string Sni { get; set; }
         public string Server { get; set; }
         public string Name { get; set; }
-
+  
         public static TrojanNode Parse(string url)
         {
             try
             {
-                var regex = new Regex(@"^([A-Za-z0-9]+)@([A-Za-z0-9\.\-]+):(\d+)\?(.+?)#(.+)$");
-                var match = regex.Match(url);
-                var password = match.Groups[1].Value;
-                var host = match.Groups[2].Value;
-                var port = int.Parse(match.Groups[3].Value);
-                var query = match.Groups[4].Value;
-                var remark = HttpUtility.UrlDecode(match.Groups[5].Value);
-                var parameters = HttpUtility.ParseQueryString(query);
-                var peer = parameters["peer"];
+                string[] a = url.Split('@');
+                var password = a[0];
+                var host = a[1].Split(':')[0];
+                var port = a[1].Split(':')[1].Split('?')[0];
+                var peer = a[1].Split(':')[1].Split('?')[1].Split('#')[0];
+                var remark = a[1].Split(':')[1].Split('?')[1].Split('#')[1];
                 return new TrojanNode
                 {
                     Name = remark,
                     Password = password,
                     Server = host,
-                    Port = port,
+                    Port = int.Parse(port),
                     Sni = peer
                     
                 };
@@ -37,7 +34,7 @@ namespace Befree
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($"Error parsing ShadowsocksR node: {ex.Message}");
+                //Console.WriteLine($"Error parsing TrojanNode node: {ex.Message}");
                 throw;
             }
         }
