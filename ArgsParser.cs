@@ -50,11 +50,18 @@ namespace Befree
                         }
                         break;
                     case "-t":
-                        if(i + 1 < args.Length)
+                        if (i + 1 < args.Length)
                         {
                             parsedArgs["-t"] = args[i + 1];
                             i++;
                         }else{Console.WriteLine("Error: -t option requires a speed url");};
+                        break;
+                    case "-y":
+                        if (i + 1 < args.Length)
+                        {
+                            parsedArgs["-y"] = args[i + 1];
+                            i++;
+                        }else{Console.WriteLine("Error: -y option requires a yourself clash yaml file");};
                         break;
                     default:
                         Console.WriteLine($"Unrecognized argument: {args[i]}");
@@ -69,13 +76,14 @@ namespace Befree
         // 显示帮助信息
         private static void ShowHelp()
         {
-            Console.WriteLine("我的天空！ Befree v0.2");
+            Console.WriteLine("我的天空！ Befree v0.3");
             Console.WriteLine("by: https://github.com/zidanfanshao/befree");
             Console.WriteLine("Usage:");
             Console.WriteLine("  -h      Show help information");
-            Console.WriteLine("  -f      Specify a file path");
+            Console.WriteLine("  -f      Specify a contain subscribe file path");
             Console.WriteLine("  -p      Specify a port number(http&socks5)");
             Console.WriteLine("  -t      Specify a link for speed testing(default:https://www.google.com)");
+            Console.WriteLine("  -y      Specify a yourself clash yaml file");
         }
     }
 }

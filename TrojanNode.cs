@@ -20,7 +20,8 @@ namespace Befree
                 var host = a[1].Split(':')[0];
                 var port = a[1].Split(':')[1].Split('?')[0];
                 var peer = a[1].Split(':')[1].Split('?')[1].Split('#')[0];
-                var remark = a[1].Split(':')[1].Split('?')[1].Split('#')[1];
+                //var remark = a[1].Split(':')[1].Split('?')[1].Split('#')[1];
+                var remark = HttpUtility.UrlDecode(a[1].Split(':')[1].Split('?')[1].Split('#')[1]);
                 return new TrojanNode
                 {
                     Name = remark,

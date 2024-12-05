@@ -9,19 +9,26 @@ class Program
         string inputFile = "./aaa.txt";
         int listenPort = 1081;
         string SpeedUrl = "https://www.google.com";
+        var Yamlfile = "sectest.yaml";
         var parsedArgs = ArgsParser.ParseArgs(args);
         if (parsedArgs.Count == 0){return;}
         if (parsedArgs.ContainsKey("-f")){inputFile = parsedArgs["-f"];}
         if (parsedArgs.ContainsKey("-p")){if (int.TryParse(parsedArgs["-p"], out int parsedPort)){listenPort = parsedPort;}else{Console.WriteLine("[-] 无效的端口号。使用默认端口 1081。");}}
         if (parsedArgs.ContainsKey("-t")){SpeedUrl = parsedArgs["-t"];}
-        Console.WriteLine("我的天空！ Befree v0.2");
-
-        RunMain(inputFile,listenPort,SpeedUrl);
-        
+        if (parsedArgs.ContainsKey("-y"))
+        {
+            Yamlfile = parsedArgs["-y"];
+            if (File.Exists(Yamlfile))
+            {
+                Console.WriteLine($" [+] 检测到 {Yamlfile} 文件，程序正在启动");
+                ClashRunner.RunClash(Yamlfile);
+            }
+        }else{RunMain(inputFile,listenPort,SpeedUrl);};
     }
 
     static void RunMain(string inputFile,int listenPort,string SpeedUrl)
     {
+        Console.WriteLine("我的天空！ Befree v0.3");
         string outputFile = "sectest.yaml";
 
         // 全局计数器,统计各类型节点总共获取数量
