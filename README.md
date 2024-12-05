@@ -29,13 +29,13 @@ v0.2版本
 .net8
 
 
-
 ## 利用方法
 
 ```
   -f      Specify a file path						        指定存在订阅的txt文件
   -p      Specify a port number(http&socks5) 		指定代理监听端口
   -t      Specify a link for speed testing      指定一个用于测速的链接(默认https://www.google.com)
+  -y      Specify a yourself clash yaml file 		单独制定自己yaml格式的配置文件(前提自己要先写好)
 ```
 
 
@@ -55,6 +55,10 @@ v0.2版本
 调用dirsx进行扫描效果
 
 ![image-20241127150550981](./assets/image-20241127150550981.png)
+
+#### 指定自己的配置文件
+
+![image-2222222](./assets/image-2222222.png)
 
 ## 当前支持协议
 
