@@ -8,7 +8,7 @@
 
 本来打算调用clash这部分也重新写一下，后来发现很多协议、很多加解密类型，太繁琐，造轮子有点麻烦，于是最后决定还是直接调用clash。
 
-release中的文件包含了一个clash，如果怕存在病毒，可以直接下载源码修改befree.csproj以及clashrunner.cs中的clash文件路径至自己的clash。
+release中的文件包含了一个clash，如果怕存在后门，可以直接下载源码修改befree.csproj以及clashrunner.cs中的clash文件路径至自己的clash。
 
 ## 更新记录
 
