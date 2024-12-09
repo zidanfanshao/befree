@@ -20,8 +20,8 @@ namespace Befree
                 var host = a[1].Split(':')[0];
                 var port = a[1].Split(':')[1].Split('?')[0];
                 var peer = a[1].Split(':')[1].Split('?')[1].Split('#')[0];
-                //var remark = a[1].Split(':')[1].Split('?')[1].Split('#')[1];
                 var remark = HttpUtility.UrlDecode(a[1].Split(':')[1].Split('?')[1].Split('#')[1]);
+                if (string.IsNullOrEmpty(remark)){remark = "aasda";}
                 return new TrojanNode
                 {
                     Name = remark,
@@ -35,8 +35,9 @@ namespace Befree
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($"Error parsing TrojanNode node: {ex.Message}");
-                throw;
+                Console.WriteLine($"[-] 发现一处TrojanNode节点 {HttpUtility.UrlDecode(url)} 转换错误，非正常命名节点。");
+                return null;
+                //throw;
             }
         }
         public override object ToClashProxy()

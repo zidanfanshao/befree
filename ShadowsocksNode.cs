@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Web; // 引入 HttpUtility.UrlDecode 支持
 
 namespace Befree
@@ -14,26 +15,46 @@ namespace Befree
         {
             try
             {
-                // 使用 Split 方法提取 @ 前的部分
-                string[] parts = ssLink.Split('@');
-                var decodedString = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(parts[0]));
-                string[] parts123 = parts[1].Split('#');
-                string[] parts1234 = parts123[0].Split(':');
-                string[] passandcipher = decodedString.Split(':');
+                string[] parts = ssLink.Split('#');
+                var name = HttpUtility.UrlDecode(parts[1]).Trim();
+                if (string.IsNullOrEmpty(name)){name = "xxxx";}
+                string cipher = string.Empty, password = string.Empty, server = string.Empty, port = string.Empty;
+
+                if (parts[0].Contains("@")){
+                    string[] parts2 = parts[0].Split('@');
+                    string[] cipher_password = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Program.cleanBase64String(parts2[0]))).Split(':');
+                    cipher = cipher_password[0];
+                    password = cipher_password[1];
+                    string[] server_port = parts2[1].Split(':');
+                    server = server_port[0].Trim();
+                    port = server_port[1].Trim();
+                }
+                else{
+                    var parts2 = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Program.cleanBase64String(parts[0])));
+                    string[] parts3 = parts2.Split('@');
+
+                    string[] cipher_password = Program.cleanBase64String(parts3[0]).Split(':');
+                    cipher = cipher_password[0];
+                    password = cipher_password[1];
+                    
+                    string[] server_port = parts3[1].Split(':');
+                    server = server_port[0].Trim();
+                    port = server_port[1].Trim();
+                }
 
                 return new ShadowsocksNode
                 {
-                    Name = HttpUtility.UrlDecode(parts123[1]).Trim(),
-                    Server = parts1234[0],
-                    Port = int.Parse(parts1234[1]),
-                    Password = passandcipher[1],
-                    Cipher = passandcipher[0]
+                    Name = name,
+                    Server = server,
+                    Port = int.Parse(port),
+                    Password = password,
+                    Cipher = cipher
                 };
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($" [-] Error parsing Shadowsocks node: {ex.Message}");
-                throw;
+                Console.WriteLine($"[-] 发现一处Shadowsocks节点 {HttpUtility.UrlDecode(ssLink)} 转换错误，非正常命名节点。");
+                return null;
             }
         }
         public override object ToClashProxy()

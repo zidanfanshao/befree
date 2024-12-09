@@ -89,7 +89,7 @@ namespace Befree
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($"Error parsing SSR node: {ex.Message}");
+                Console.WriteLine($"Error parsing SSR node: {ex.Message}");
                 return null;  // 或抛出异常，取决于需求
             }
         }

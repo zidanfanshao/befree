@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Text.Json;
+using System.Web; // 引入 HttpUtility.UrlDecode 支持
 
 namespace Befree
 {
@@ -12,6 +13,8 @@ namespace Befree
         public string UUID { get; set; }
         public string Cipher { get; set; }
 
+
+
         private static string ExtractLocationName(string proxyName)
         {
             // 匹配连续的中文字符
@@ -22,9 +25,11 @@ namespace Befree
 
         public static VmessNode FromBase64(string base64)
         {
-            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
             try
             {
+                string sssx =  Program.cleanBase64String(base64);
+                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(sssx));
+                //Console.WriteLine($"json:{json}");
                 // 使用 System.Text.Json 解析 JSON 字符串
                 using (JsonDocument doc = JsonDocument.Parse(json))
                 {
@@ -32,20 +37,30 @@ namespace Befree
 
                     // 提取字段
                     var name = root.GetProperty("ps").GetString();
+                    //Console.WriteLine($"name:{name}");
                     var server = root.GetProperty("add").GetString();
-                    //var portstring =  ;
-                    var port = int.Parse(root.GetProperty("port").GetString());
+                    //Console.WriteLine($"server:{server}");
+                    //var port = root.GetProperty("port").GetInt32();
+                    //var port = int.Parse(root.GetProperty("port").GetString());
+                    JsonElement portElement = root.GetProperty("port");
+                    int port = 0;
+                    if(portElement.ValueKind == JsonValueKind.String)
+                    {
+                        port = int.Parse(portElement.GetString());
+                    }
+                    else if (portElement.ValueKind == JsonValueKind.Number)
+                    {
+                        port = portElement.GetInt32();
+                    }
+                    //Console.WriteLine($"port:{port}");
                     var uuid = root.GetProperty("id").GetString();
+                    //Console.WriteLine($"uuid:{uuid}");
                     var cipher = root.TryGetProperty("cipher", out var cipherProp) ? cipherProp.GetString() : "auto";
+                    //Console.WriteLine($"cipher:{cipher}");
 
                     // 提取中文位置名称
                     string locationName = ExtractLocationName(name);
-
-                    // Console.WriteLine($"Name: {locationName}");
-                    // Console.WriteLine($"Server: {server}");
-                    // Console.WriteLine($"Port: {port}");
-                    // Console.WriteLine($"UUID: {uuid}");
-                    // Console.WriteLine($"Cipher: {cipher}");
+                    if (string.IsNullOrEmpty(locationName)){locationName = "xxxx";}
 
                     return new VmessNode
                     {
@@ -59,8 +74,8 @@ namespace Befree
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[-] Error parsing Vmess node: {ex.Message}");
-                throw;
+                Console.WriteLine($"[-] 发现一处Vmess节点 {HttpUtility.UrlDecode(base64)} 转换错误，非正常命名节点。");
+                return null;
             }
         }
 

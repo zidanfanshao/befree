@@ -76,7 +76,7 @@ namespace Befree
         // 显示帮助信息
         private static void ShowHelp()
         {
-            Console.WriteLine("我的天空！ Befree v0.3");
+            Console.WriteLine("我的天空！ Befree v0.4");
             Console.WriteLine("by: https://github.com/zidanfanshao/befree");
             Console.WriteLine("Usage:");
             Console.WriteLine("  -h      Show help information");

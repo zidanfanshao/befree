@@ -1,4 +1,4 @@
-﻿
+﻿using System.Text.RegularExpressions;
 using System.Text;
 using Befree;
 class Program
@@ -7,7 +7,7 @@ class Program
     static void Main(string[] args)
     {
         string inputFile = "./aaa.txt";
-        int listenPort = 1081;
+        int listenPort = 59981;
         string SpeedUrl = "https://www.google.com";
         var Yamlfile = "sectest.yaml";
         var parsedArgs = ArgsParser.ParseArgs(args);
@@ -28,7 +28,7 @@ class Program
 
     static void RunMain(string inputFile,int listenPort,string SpeedUrl)
     {
-        Console.WriteLine("我的天空！ Befree v0.3");
+        Console.WriteLine("我的天空！ Befree v0.4");
         string outputFile = "sectest.yaml";
 
         // 全局计数器,统计各类型节点总共获取数量
@@ -49,23 +49,21 @@ class Program
             var nodes = FetchAndParseSubscription(url, ref totalVmessCount, ref totalSsCount, ref totalSsrCount, ref totalTrojanCount);
             allNodes.AddRange(nodes);
         }
-        Console.WriteLine($" [+] 总共解析到{allNodes.Count} 个节点");
+        Console.WriteLine($" [+] 总共解析到{allNodes.Count} 个正常转换节点");
         // 输出所有协议类型节点的总数
         Console.WriteLine($" [+] 其中包含vmess节点数量为: {totalVmessCount}");
         Console.WriteLine($" [+] 其中包含ss节点数量为: {totalSsCount}");
-        Console.WriteLine($" [+] 其中包含ssr节点数量为: {totalSsrCount}**");
+        //Console.WriteLine($" [+] 其中包含ssr节点数量为: {totalSsrCount}**");
         Console.WriteLine($" [+] 其中包含trojan节点数量为: {totalTrojanCount}");
 
         //3.生成clash配置文件
         if (allNodes.Count > 0){
             ClashConfigManager.GenerateConfig(allNodes,outputFile,listenPort,SpeedUrl);
-            //Console.WriteLine($" [+] Clash配置已生成: {outputFile}");    
             //4.运行clash
             ClashRunner.RunClash(outputFile);
         }else{Console.WriteLine($" [-] 未获取到可用节点，无法启动befree");}
 
     }
-
 
     //统计订阅文件中有多少订阅地址  
     static List<string> LoadSubscriptionUrls(string filePath)
@@ -106,7 +104,6 @@ class Program
         return nodes;
     }
 
-
     //请求解析订阅
     static List<Node> FetchAndParseSubscription(string url, ref int totalVmessCount, ref int totalSsCount, ref int totalSsrCount, ref int totalTrojanCount)
     {
@@ -114,12 +111,16 @@ class Program
         {
             using var client = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(1000)
+                Timeout = TimeSpan.FromSeconds(10)
             };
             var response = client.GetStringAsync(url).Result;
             Console.WriteLine($" [+] 订阅获取成功： {url}");
-
-            string decodedData = Encoding.UTF8.GetString(Convert.FromBase64String(response));
+            if (response.Contains("proxy-groups")){
+                //Console.WriteLine($" [+] 暂不支持clash订阅地址转换 {url}，请自行修改！");
+                return new List<Node>();
+            }
+            var dec = Convert.FromBase64String(cleanBase64String(response));
+            string decodedData = Encoding.UTF8.GetString(dec);
             return ParseNodes(decodedData, ref totalVmessCount, ref totalSsCount, ref totalSsrCount, ref totalTrojanCount);
         }
         catch (Exception ex)
@@ -135,5 +136,14 @@ class Program
             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
         };
         return new HttpClient(handler);
+    }
+
+    public static string cleanBase64String(string base64){
+        string Base64String = base64.Replace("\n", "").Replace("\r", "").Trim();
+        if (Base64String.Length % 4 != 0)
+        {
+            Base64String = Base64String.PadRight(Base64String.Length + (4 - Base64String.Length % 4), '=');
+        }
+        return Base64String;
     }
 }
